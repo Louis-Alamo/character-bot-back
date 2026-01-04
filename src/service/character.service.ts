@@ -1,4 +1,4 @@
-import { Character, CreateCharacterDTO } from "../interface/character";
+import { Character, CreateCharacterDTO, UpdateCharacterDTO } from "../interface/character";
 import { CharacterRepository } from "../repository/character.repository";
 
 /**
@@ -46,5 +46,31 @@ export class CharacterService {
      */
     async getAllCharacters(): Promise<Character[]> {
         return await this.repository.findAll();
+    }
+
+    /**
+     * Actualiza un personaje existente
+     */
+    async updateCharacter(id: number, data: UpdateCharacterDTO): Promise<Character> {
+        // Verificar que el personaje existe
+        const existing = await this.repository.findById(id);
+        
+        if (!existing) {
+            throw new Error(`Character with ID ${id} not found`);
+        }
+
+        // Si se está actualizando el nombre, verificar que no exista otro personaje con ese nombre
+        if (data.name && data.name !== existing.name) {
+            const duplicateName = await this.repository.findByName(data.name);
+            
+            if (duplicateName && duplicateName.id !== id) {
+                throw new Error(`A character with the name '${data.name}' already exists`);
+            }
+        }
+
+        // Actualizar el personaje
+        const updatedCharacter = await this.repository.update(id, data);
+        
+        return updatedCharacter;
     }
 }

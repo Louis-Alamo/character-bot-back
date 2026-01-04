@@ -17,3 +17,12 @@ export interface CreateCharacterDTO {
     greeting_message?: string;
     temperature?: number;
 }
+
+export interface UpdateCharacterDTO {
+    name?: string;
+    description?: string;
+    avatar_url?: string;
+    system_prompt?: string;
+    greeting_message?: string;
+    temperature?: number;
+}

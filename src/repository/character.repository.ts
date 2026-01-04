@@ -1,5 +1,5 @@
 import { database } from "../config/database";
-import { Character, CreateCharacterDTO } from "../interface/character";
+import { Character, CreateCharacterDTO, UpdateCharacterDTO } from "../interface/character";
 
 /**
  * Repository para operaciones de base de datos de personajes
@@ -92,6 +92,65 @@ export class CharacterRepository {
                     return;
                 }
                 resolve(row);
+            });
+        });
+    }
+
+    /**
+     * Actualiza un personaje existente
+     */
+    async update(id: number, data: UpdateCharacterDTO): Promise<Character> {
+        return new Promise((resolve, reject) => {
+            // Construir query dinámica solo con los campos proporcionados
+            const fields: string[] = [];
+            const params: any[] = [];
+
+            if (data.name !== undefined) {
+                fields.push("name = ?");
+                params.push(data.name);
+            }
+            if (data.description !== undefined) {
+                fields.push("description = ?");
+                params.push(data.description);
+            }
+            if (data.avatar_url !== undefined) {
+                fields.push("avatar_url = ?");
+                params.push(data.avatar_url);
+            }
+            if (data.system_prompt !== undefined) {
+                fields.push("system_prompt = ?");
+                params.push(data.system_prompt);
+            }
+            if (data.greeting_message !== undefined) {
+                fields.push("greeting_message = ?");
+                params.push(data.greeting_message);
+            }
+            if (data.temperature !== undefined) {
+                fields.push("temperature = ?");
+                params.push(data.temperature);
+            }
+
+            // Agregar el ID al final de los parámetros
+            params.push(id);
+
+            const query = `UPDATE characters SET ${fields.join(", ")} WHERE id = ?`;
+
+            database.run(query, params, function (err) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                // Obtener el registro actualizado
+                const selectQuery = `SELECT * FROM characters WHERE id = ?`;
+                
+                database.get(selectQuery, [id], (err, row: Character) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    resolve(row);
+                });
             });
         });
     }
