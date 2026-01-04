@@ -15,7 +15,7 @@ export function initSchema() {
                 system_prompt TEXT NOT NULL,
                 greeting_message TEXT,
                 temperature REAL DEFAULT 0.7,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )     
             
         `);
