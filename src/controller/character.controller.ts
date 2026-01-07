@@ -13,6 +13,7 @@ export async function createCharacter(req: Request, res: Response) {
         return sendCreated(res, newCharacter, "Character created successfully");
         
     } catch (error: any) {
+        // Manejar errores específicos
         if (error.message && error.message.includes("already exists")) {
             return sendConflict(res, error.message);
         }
@@ -25,7 +26,9 @@ export async function createCharacter(req: Request, res: Response) {
 export async function getAllCharacters(req: Request, res: Response) {
     try {
         const characters = await characterService.getAllCharacters();
+        
         return sendOk(res, characters, "Characters retrieved successfully");
+        
     } catch (error: any) {
         console.error("Error retrieving characters:", error);
         return sendInternalError(res, "Failed to retrieve characters", error.message);
@@ -65,5 +68,24 @@ export async function updateCharacter(req: Request, res: Response) {
         
         console.error("Error updating character:", error);
         return sendInternalError(res, "Failed to update character", error.message);
+    }
+}
+
+export async function deleteCharacter(req: Request, res: Response) {
+    try {
+        const characterId = Number(req.params.id);
+        
+        await characterService.deleteCharacter(characterId);
+        
+        return sendOk(res, null, "Character deleted successfully");
+        
+    } catch (error: any) {
+        // Manejar error de personaje no encontrado
+        if (error.message && error.message.includes("not found")) {
+            return sendNotFound(res, error.message);
+        }
+        
+        console.error("Error deleting character:", error);
+        return sendInternalError(res, "Failed to delete character", error.message);
     }
 }

@@ -154,4 +154,23 @@ export class CharacterRepository {
             });
         });
     }
+
+    /**
+     * Elimina un personaje por su ID
+     */
+    async delete(id: number): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            const query = `DELETE FROM characters WHERE id = ?`;
+            
+            database.run(query, [id], function (err) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                
+                // this.changes indica cuántas filas fueron afectadas
+                resolve(this.changes > 0);
+            });
+        });
+    }
 }

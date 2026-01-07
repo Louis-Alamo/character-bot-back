@@ -73,4 +73,19 @@ export class CharacterService {
         
         return updatedCharacter;
     }
+
+    /**
+     * Elimina un personaje
+     */
+    async deleteCharacter(id: number): Promise<void> {
+        // Verificar que el personaje existe
+        const existing = await this.repository.findById(id);
+        
+        if (!existing) {
+            throw new Error(`Character with ID ${id} not found`);
+        }
+
+        // Eliminar el personaje
+        await this.repository.delete(id);
+    }
 }
